@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { connect, Provider } from 'react-redux'; 
 import { createStore, combineReducers } from 'redux';
 
 
@@ -83,73 +84,6 @@ const TodoListComp = ({todos, onTodoClick}) => {
 	</ul>
 )}
 
-const AddTodoComp = ({
-	onAddTodo
-}) => {
-	let input;
-	return (
-		<div>
-			<input ref={node => {
-				input = node;
-			}} />
-			<button onClick={() => {
-				onAddTodo(input.value);
-				input.value = '';
-			}}>
-				Add Todo
-			</button>
-		</div>
-	)
-};
-
-
-const FilterLink = ({
-	filter,
-	currentFilter,
-	children,
-	onClick
-}) => {
-	if(currentFilter === filter) {
-		return <span>{children}</span>
-	}
-
-	return (
-		<a href="#" onClick={e => {
-			e.preventDefault();
-			onClick(filter);
-		}}
-		>
-			{children}
-		</a>
-	)
-}
-
-const FooterComp = ({
-	visibility,
-	onFilterClick
-}) => {
-	return (
-		<p>
-			Show: 
-			<FilterLink 
-				filter="SHOW_ALL"
-				currentFilter={visibility}
-				onClick={onFilterClick}>All</FilterLink>
-			{' '}
-			<FilterLink 
-				filter="SHOW_ACTIVE"
-				currentFilter={visibility}
-				onClick={onFilterClick}
-				>Active</FilterLink>
-			{' '}
-			<FilterLink 
-				filter="SHOW_COMPLETED"
-				currentFilter={visibility}
-				onClick={onFilterClick}>Completed</FilterLink>
-		</p>
-	)
-}
-
 const getVisibleTodos = (todos, filter) => {
 	return todos.filter((todo) => {
 		switch(filter) {
@@ -169,50 +103,170 @@ const getVisibleTodos = (todos, filter) => {
 	});
 }
 
+/**
+ * Function that takes in the state object and returns props that are
+ * based on it. This is used by container components that pass state
+ * based attributes as props to its child presentational components
+ */
+const stateToProps = (state) => {
+	return {
+		todos: getVisibleTodos(state.todos, state.visibility)
+	};
+};
+
+/**
+ * function that takes in the store dispatch function and returns back
+ * the props that use this dispatch function to dispatch actions.
+ */
+const dispatchToProps = (dispatch) => {
+	return {
+		onTodoClick: 
+			(id) => {
+				dispatch({
+					type: 'TOGGLE_TODO',
+					id
+				});
+			}
+		
+	};
+};
+
+/**
+ * Now we no longer need to write the container component by hand. Instead
+ * we use connect to generate it for us.
+ * Note however that to use connect we ned the store to be passed in 
+ * either as a prop or via the context
+ */
+const VisibleTodos = connect(
+	stateToProps,
+	dispatchToProps
+)(TodoListComp);
+
+
+const AddTodoComp = ({
+	onAddTodo
+}) => {
+	let storeDispatch = () => {
+		store.dispatch({
+			type: 'ADD_TODO',
+			text: input.value,
+			id: idCounter++
+		});
+
+		input.value = '';
+	};
+
+	let input;
+	return (
+		<div>
+			<input ref={node => {
+				input = node;
+			}} onKeyUp={(e) => {
+				if(e.keyCode === 13) {
+					storeDispatch();
+				}
+			}}/>
+			<button onClick={(e) => {
+				storeDispatch();
+			}}>
+				Add Todo
+			</button>
+		</div>
+	)
+};
+
+
+const Link = ({
+	active,
+	onClick,
+	children,
+}) => {
+	if(active) {
+		return <span>{children}</span>
+	}
+
+	return (
+		<a href="#" onClick={(e) => {
+			e.preventDefault();
+			onClick();
+		}}>
+			{children}
+		</a>
+	)
+}
+
+class FilterLink extends React.Component {
+	// Lifecycle methods.
+	componentDidMount() {
+		this.unsubscribe = store.subscribe(() => {
+			// React method that will force the re-rendering of the component.
+			this.forceUpdate();
+		})
+
+	}
+
+	componentWillUnMount() {
+		this.unsubscribe();
+	}
+
+	render() {
+		const props = this.props;
+		const state = store.getState();
+
+		return (
+			<Link 
+				active={
+					props.filter === state.visibility
+				}
+				onClick={() => {
+					store.dispatch({
+						type: 'SET_VISIBILITY_FILTER',
+						filter: props.filter
+					});
+				}}
+			>
+				{props.children}
+			</Link>	
+		)
+	}
+}
+
+
+const FooterComp = () => {
+	return (
+		<p>
+			Show:
+			<FilterLink filter="SHOW_ALL">All</FilterLink>
+			{' '}
+			<FilterLink filter="SHOW_ACTIVE">Active</FilterLink>
+			{' '}
+			<FilterLink filter="SHOW_COMPLETED">Completed</FilterLink>
+		</p>
+	)
+}
+
+
 
 let idCounter = 0;
 
-const App = ({todos, visibility}) => (
+const App = () => (
 	<div>
-		<AddTodoComp onAddTodo={
-			(text) => {
-				store.dispatch({
-					type: 'ADD_TODO',
-					text,
-					id: idCounter++ 
-				})
-			}
-		} />
-		<TodoListComp todos={getVisibleTodos(todos, visibility)} onTodoClick={(id) => {
-			store.dispatch({
-				type: 'TOGGLE_TODO',
-				id
-			})
-		}} />
-		<FooterComp 
-			visibility={visibility}
-			onFilterClick={(filter) => {
-				console.log("Dispatching for filter " + filter);
-				store.dispatch({
-					type: 'SET_VISIBILITY_FILTER',
-					filter
-				})
-			}
-		} />
+		<AddTodoComp />
+		<VisibleTodos />
+		
+		<FooterComp />
 	</div>
 );
 
+export default App;
 
-/**
- * Runner that will be invoked from the outside to render this component
- */
-class RunApp {
-	render() {
-		ReactDOM.render(<App {...store.getState()}/>, document.getElementById('app'));
-	}
-};
-var runner = new RunApp();
+// Render the component. It no longer needs state values passed in as props.
+// This is because its components are separated into container and presentational
+// components and will dip into the redux store for state as and when they need.
+ReactDOM.render(
+	<Provider store={ store }>
+		<App />
+	</Provider>,	 
+	document.getElementById('app')
+);
 
-store.subscribe(runner.render);
-
-export default runner;

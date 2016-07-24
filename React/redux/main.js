@@ -4,9 +4,9 @@ import React from 'react';
 // import { createStore } from 'redux';
 import todoApp from './reducers';
 import App from './components/App';
-import RunApp from './App';
+import EggheadApp from './App';
 
-RunApp.render();
+
 
 // let store = createStore(todoApp);
 
