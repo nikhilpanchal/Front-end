@@ -1,0 +1,28 @@
+.positions-top {
+	width: 300px;
+	height: 200px;
+	border: 1px solid red;
+	margin: 0 auto;
+	padding: 10px
+}
+
+.position {
+	display: inline-block;
+	border: 0 solid blue;
+	width: 50%;
+	height: 80px;
+	box-sizing: border-box;
+	margin-right: -4px
+}
+
+.position-title {
+	display: block;
+	border: 0px solid green;
+	line-height: 1;
+}
+
+.position-value {
+	display: block;
+	border: 0px solid black;
+	line-height: 3.8;
+}

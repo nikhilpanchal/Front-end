@@ -1,0 +1,30 @@
+body {
+  width: 500px;
+  height: 1400px; /* this is to get a scrollbar to appear */
+  margin: 0 auto;
+}
+
+p {
+  background: aqua;
+  padding: 10px;
+  margin: 10px;
+  border: 3px solid blue;
+}
+
+h1 {
+  position: fixed;
+  top: 0px;
+  width: 500px;
+  margin: 0 auto;
+  background: white;
+  padding: 10px;
+}
+
+p:nth-of-type(1) {
+  margin-top: 60px;
+}
+
+span {
+  background: red;
+  border: 1px solid red;
+}
