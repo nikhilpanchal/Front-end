@@ -1,0 +1,16 @@
+{
+  "name": "cssfundas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "author": "Nikhil",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^0.23.1",
+    "style-loader": "^0.13.1",
+    "less-loader": "^2.2.3"
+  }
+}
