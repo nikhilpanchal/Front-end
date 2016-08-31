@@ -7,7 +7,7 @@ var deliveryBoy = {
     },
 
     receive: function() {
-        that = this;
+        var that = this;
 
 //        this.handleMessage("Hello ", function(message) {
           // Here this refers to the scope of this function (function(message))
@@ -20,13 +20,14 @@ var deliveryBoy = {
         // outside this function.
         // So you dont need to preserve the outer this in separate variables
         // like doing that = this.
-        this.handleMessage("Hello ", message => {
+        this.handleMessage("Hello ", (message) => {
             console.log(message + this.name);
         });
     }
 };
 
-deliveryBoy.receive();
+// deliveryBoy.receive();
+export default deliveryBoy;
 
 const VALUE = "Fixed Value";
 
@@ -51,4 +52,4 @@ if(true) {
     console.log(foo);
 }
 // This will fail because the const foo doesn't exist outside the if scope
-console.log(foo);
+// console.log(foo);

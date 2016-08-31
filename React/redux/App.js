@@ -4,6 +4,30 @@ import { connect, Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 
 
+/** Action Creators **/
+
+let idCounter = 0;
+const addTodoActionCreator = (text) => {
+	return {
+		type: 'ADD_TODO',
+		text,
+		id: idCounter++
+	}
+}
+const setVisibilityFilterActionCreator = (filter) => {
+	return {
+		type: 'SET_VISIBILITY_FILTER',
+		filter
+	}
+}
+const toggleTodoActionCreator = (id) => {
+	return {
+		type: 'TOGGLE_TODO',
+		id
+	}
+}
+
+
 const todos = (state = [], action) => {
 	switch(action.type) {
 		case "ADD_TODO": {
@@ -50,9 +74,6 @@ const reducers = combineReducers({
 	todos,
 	visibility
 });
-
-const store = createStore(reducers);
-
 
 /** Presentational Component **/
 /**
@@ -122,10 +143,7 @@ const dispatchToProps = (dispatch) => {
 	return {
 		onTodoClick: 
 			(id) => {
-				dispatch({
-					type: 'TOGGLE_TODO',
-					id
-				});
+				dispatch(toggleTodoActionCreator(id));
 			}
 		
 	};
@@ -143,15 +161,11 @@ const VisibleTodos = connect(
 )(TodoListComp);
 
 
-const AddTodoComp = ({
-	onAddTodo
+let AddTodoComp = ({
+	dispatch
 }) => {
 	let storeDispatch = () => {
-		store.dispatch({
-			type: 'ADD_TODO',
-			text: input.value,
-			id: idCounter++
-		});
+		dispatch(addTodoActionCreator(input.value));
 
 		input.value = '';
 	};
@@ -175,6 +189,19 @@ const AddTodoComp = ({
 	)
 };
 
+// by default connect will pass just the dispatch function, so writing it below
+// is a shortcut for writing it this way
+// connect(null, (dispatch) => {
+	// return { dispatch };
+// })(AddTodoComp);
+// We can do this because AddTodoComp doesnt need any props based on the state,
+// and it just needs the store for its dispatch function so we can just pass 
+// back a prop with the dispatch function itself. However given that this is a
+// common scenario, react-redux has made the connect() function to pass just 
+// the dispatch function as a default if no params are provided. So can we
+// end up calling connect just plain with no args as below.
+AddTodoComp = connect()(AddTodoComp);
+
 
 const Link = ({
 	active,
@@ -193,43 +220,31 @@ const Link = ({
 			{children}
 		</a>
 	)
-}
+};
 
-class FilterLink extends React.Component {
-	// Lifecycle methods.
-	componentDidMount() {
-		this.unsubscribe = store.subscribe(() => {
-			// React method that will force the re-rendering of the component.
-			this.forceUpdate();
-		})
-
+/**
+ * This is the container component for the Links. Here we pass down
+ * the state based props as well as dispatch based function props.
+ * In both cases, we need the incoming props, which we refer to 
+ * using the second arguments to the stateToProps and dispatchToProps
+ * functions.
+ */
+const FilterLink = connect(
+	(state, ownProps) => {
+		// Return state based props.
+		return {
+			active: (ownProps.filter === state.visibility)
+		}
+	},
+	(dispatch, ownProps) => {
+		// Return dispatch based props.
+		return {
+			onClick: () => {
+				dispatch(setVisibilityFilterActionCreator(ownProps.filter));
+			}
+		}
 	}
-
-	componentWillUnMount() {
-		this.unsubscribe();
-	}
-
-	render() {
-		const props = this.props;
-		const state = store.getState();
-
-		return (
-			<Link 
-				active={
-					props.filter === state.visibility
-				}
-				onClick={() => {
-					store.dispatch({
-						type: 'SET_VISIBILITY_FILTER',
-						filter: props.filter
-					});
-				}}
-			>
-				{props.children}
-			</Link>	
-		)
-	}
-}
+)(Link);
 
 
 const FooterComp = () => {
@@ -246,9 +261,6 @@ const FooterComp = () => {
 }
 
 
-
-let idCounter = 0;
-
 const App = () => (
 	<div>
 		<AddTodoComp />
@@ -258,13 +270,14 @@ const App = () => (
 	</div>
 );
 
+
 export default App;
 
 // Render the component. It no longer needs state values passed in as props.
 // This is because its components are separated into container and presentational
 // components and will dip into the redux store for state as and when they need.
 ReactDOM.render(
-	<Provider store={ store }>
+	<Provider store={ createStore(reducers) }>
 		<App />
 	</Provider>,	 
 	document.getElementById('app')
