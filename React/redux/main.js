@@ -2,9 +2,9 @@ import React from 'react';
 // import { render } from 'react-dom';
 // import { provider } from 'react-redux';
 // import { createStore } from 'redux';
-import todoApp from './reducers';
-import App from './components/App';
-import EggheadApp from './App';
+// import todoApp from './reducers';
+// import App from './components/App';
+import App from './App';
 
 
 
