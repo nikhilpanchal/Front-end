@@ -1,3 +1,5 @@
+"use strict";
+
 import React from 'react';
 import './text.less';
 
@@ -5,27 +7,19 @@ class Text extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			changed: false
-		}
-
-		// Bind the handlers.
 		this.handleChange = this.handleChange.bind(this);
-		this.handleBlur = this.handleBlur.bind(this);
+		this.state = {
+			value: props.value
+		}
 	}
+
 
 	handleChange(e) {
 		this.setState({
-			changed: true
-		});
-	}
+			value: e.target.value
+		})
 
-	handleBlur(e) {
-		if(this.state.changed) {
-			this.setState({
-				changed: false
-			});
-
+		if(this.props.handleChange) {
 			this.props.handleChange(e);
 		}
 	}
@@ -34,20 +28,19 @@ class Text extends React.Component {
 		return (
 			<div className="container">
 				<label className="title">{this.props.title}</label>
-				{
-					(this.props.handleChange) ? 
-						<input className="input" onBlur={this.handleBlur} onChange={this.handleChange} type="text" />
-					:
-						<input className="input" type="text" />
-					
-				}
-				
+				<input className="input" 
+						onBlur={this.props.handleBlur} 
+						onChange={this.handleChange} 
+						type={this.props.type}
+						defaultValue={this.state.value}/>	
 			</div>
 		);
 	}
 }
 
 Text.propTypes = {
+	title: React.PropTypes.string,
+	handleBlur: React.PropTypes.func,
 	handleChange: React.PropTypes.func
 }
 
