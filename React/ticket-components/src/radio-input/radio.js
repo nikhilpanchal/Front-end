@@ -1,22 +1,23 @@
 import React from 'react';
+import './radio.less';
 
 const Radio = ({title, name, values, defaultChecked, handleChange, handleBlur}) => {
 	return (
 		<div className="container">
-			<label className="title">{title}</label>
+			<label className="radioTitle">{title}</label>
 
 			{values.map((value, i) => {
 				let checked = (value === defaultChecked);
 				return (
-				<div key={i}>
-					<input name={name}
-								type="radio"
+					<div key={i}>
+						<input name={name} 
 								value={value}
-								onBlur={handleBlur}
+								type="radio" 
+								defaultChecked={checked}
 								onChange={handleChange}
-								defaultChecked={checked} />
-								{value}
-				</div>
+								onBlur={handleBlur}/>
+						{value}
+					</div>
 				)
 			})}
 		</div>

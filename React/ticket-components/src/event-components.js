@@ -5,7 +5,6 @@ import EventMixin from './util/events';
 
 let TextEvent = EventMixin(Text);
 let SelectEvent = EventMixin(Select);
-let RadioEvent = EventMixin(Radio);
 
 export {
 	TextEvent,

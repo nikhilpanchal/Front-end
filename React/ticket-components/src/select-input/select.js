@@ -1,5 +1,6 @@
+"use strict";
+
 import React from 'react';
-import './select.less';
 
 class Select extends React.Component {
 	constructor(props) {
