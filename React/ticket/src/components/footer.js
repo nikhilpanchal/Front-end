@@ -1,30 +1,14 @@
 import React from 'react';
 
+const FOOTER_MESSAGE = "Copyright Nikhil Panchal 2017";
 
-class FooterComp extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			counter: 0
-		}
-	}
-
-	render() {
-		return (
-			<div>
-				<button type="button" 
-					name="titleSwitch"
-					onClick={() => {
-						let title = (++this.state.counter % 2) ? "TOE: Title Order Entry" : "TOE: Trade Order Entry";
-
-						this.props.switchTitle(title);
-					}}>
-					Switch Title
-				</button>
-			</div>
-		);
-	}
+const Footer = ({message}) => {
+	message = message ? message : FOOTER_MESSAGE;
+	return (
+		<div>
+			<span className="footer">{message}</span>
+		</div>
+	)
 }
 
-export default FooterComp
+export default Footer

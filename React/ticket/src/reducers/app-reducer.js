@@ -2,10 +2,14 @@
 import { ACTION_SWITCH_TITLE } from '../actions/Actions';
 
 let initialState = {
-	title: "TOE: Trade Order Entry"
+	title: "TOE: Trade Order Entry",
+	footer: "Copyright 2016"
 };
 
-export default function appReducer(state = initialState, action) {
+/**
+ * Manages application level elements like Title and footer
+ */
+function appReducer(state = initialState, action) {
 	switch (action.type) {
 		case ACTION_SWITCH_TITLE: {
 			return {
@@ -15,3 +19,5 @@ export default function appReducer(state = initialState, action) {
 		default: return initialState;
 	}
 }
+
+export default appReducer

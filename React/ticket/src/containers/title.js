@@ -1,12 +1,13 @@
 import { connect } from 'react-redux';
 import TitleComp from '../components/title-component';
 
+
 const Title = connect(
 	// mapStateToProps
-	(state) => {
+	(state, ownProps) => {
 		return {
-			titleText: state.title
-		}
+			titleText: state.app.title
+		};
 	}
 )(TitleComp);
 

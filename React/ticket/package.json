@@ -7,5 +7,8 @@
     "start": "webpack-dev-server"
   },
   "author": "Nikhil",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ticket-components": "^1.0.0"
+  }
 }

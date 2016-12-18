@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import appReducer from './reducers/app-reducer';
+import reducers from './reducers/reducers';
 import TicketApp from './ticket-app';
 
 
-let store = createStore(appReducer);
+
+let store = createStore(reducers);
 
 
 
