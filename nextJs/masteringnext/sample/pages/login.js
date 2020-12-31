@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router'
+import Header from '../components/header'
 
 const Login = () => {
   const router = useRouter()
@@ -11,6 +12,7 @@ const Login = () => {
 
   return (
     <>
+      <Header />
       <input placeholder='User Name' />
       <input placeholde='Password' />
       <button onClick={onLogin} type='button'>
